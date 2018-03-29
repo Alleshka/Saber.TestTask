@@ -10,23 +10,23 @@ namespace Saber.Serializer.Test
     public class UnitTest1
     {
 
-        private ListRand listRand = new ListRand();
-
-        private void InitList()
+        private ListRand InitList()
         {
+            ListRand listRand = new ListRand();
             listRand.InsertToEnd("One");
-            listRand.InsertToEnd("Two");
+            listRand.InsertToEnd("Two\nqTwo");
             listRand.InsertToEnd("3");
             listRand.InsertToEnd("ol|olo");
-            listRand.InsertToEnd("qqqq");
+            listRand.InsertToEnd("qq||||qq");
             listRand.InsertToEnd("test:slom");
+            return listRand;
         }
 
         [TestMethod]
         public void SerializeTest()
         {
             // Arrange
-            InitList();
+            var listRand = InitList();
 
             // Act
             using (FileStream stream = new FileStream("test.txt", FileMode.Create))
@@ -40,19 +40,20 @@ namespace Saber.Serializer.Test
         public void DeSerializeTest()
         {
             // Arrange
-            InitList();
+            var listRand1 = InitList();
+            ListRand listRand2 = new ListRand();
 
-            int count = listRand.Count;
 
             // Act
             using (FileStream stream = new FileStream("test.txt", FileMode.Open))
             {
-                listRand.Deserialize(stream);
+                listRand2.Deserialize(stream);
                 stream.Close();
             }
 
             // Asserst
-            Assert.AreEqual(count, listRand.Count);
+            Assert.AreEqual(listRand1.Count, listRand2.Count);
+            if (listRand1.Count > 0) Assert.AreEqual(listRand1.Head.Data, listRand2.Head.Data);
         }
     }
 }
